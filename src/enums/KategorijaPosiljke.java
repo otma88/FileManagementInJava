@@ -1,4 +1,4 @@
-package MarioJavaZadatak.enums;
+package enums;
 
 public enum KategorijaPosiljke {
 

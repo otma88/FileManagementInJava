@@ -1,6 +1,6 @@
 package model;
 
-import KategorijaPosiljke;
+import enums.KategorijaPosiljke;
 import enums.NacinPlacanja;
 import enums.VrstaPosiljke;
 import enums.VrstaPrometa;
@@ -16,6 +16,8 @@ public class Datoteka {
     private static final String RESET = "\033[0m";
     private static final String GREEN = "\033[0;32m";
     static UIAkcije meni = new UIAkcije();
+    private boolean postojiFolder = true;
+    private boolean imaDatoteka = true;
     private Map<Integer, Posiljka> posiljkeUDatoteci;
 
     public Datoteka(){
@@ -41,9 +43,13 @@ public class Datoteka {
                         System.out.println(listaDatoteka[i].getName());
                     }
                 }
+            } else {
+                System.out.println(ANSI_RED + "Nema datoteka za prikaz!" + RESET);
+                imaDatoteka = false;
             }
         } else {
-            System.out.println(ANSI_RED + "Nema datoteka za prikaz!" + RESET);
+            System.out.println(ANSI_RED + "Ne postoji mapa posiljke! Kreirajte ju u root-u" + RESET);
+            postojiFolder = false;
         }
     }
 
@@ -84,27 +90,33 @@ public class Datoteka {
      * @return
      */
     public String kreiranjeDatoteke() {
-        File folder = new File("posiljke");
-        File[] listaDatoteka = folder.listFiles();
-        String pattern = "dd-MM-yyyy";
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
-        String date = simpleDateFormat.format(new Date());
-        int num = 1;
-        String filename = "posiljke/epk_" + date + "_" + num + ".csv";
-        String[] filenameDate = filename.split("_");
-        String filenamePart2 = filenameDate[1];
-        if (listaDatoteka != null) {
-            for (int i = 0; i < listaDatoteka.length; i++) {
-                String[] listaDate = listaDatoteka[i].getName().split("_");
-                String listaDatePart2 = listaDate[1];
-                if (filenamePart2.equals(listaDatePart2)) {
-                    num++;
+        if (postojiFolder) {
+            File folder = new File("posiljke");
+            File[] listaDatoteka = folder.listFiles();
+            String pattern = "dd-MM-yyyy";
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
+            String date = simpleDateFormat.format(new Date());
+            int num = 1;
+            String filename = "posiljke/epk_" + date + "_" + num + ".csv";
+            String[] filenameDate = filename.split("_");
+            String filenamePart2 = filenameDate[1];
+            if (listaDatoteka != null) {
+                for (int i = 0; i < listaDatoteka.length; i++) {
+                    String[] listaDate = listaDatoteka[i].getName().split("_");
+                    String listaDatePart2 = listaDate[1];
+                    if (filenamePart2.equals(listaDatePart2)) {
+                        num++;
+                    }
                 }
+                filename = folder + "/epk_" + date + "_" + num + ".csv";
             }
-            filename = folder + "/epk_" + date + "_" + num + ".csv";
+            this.posiljkeUDatoteci.clear();
+            return filename;
+        } else {
+            System.out.println(ANSI_RED + "Ne postoji mapa posiljke! Kreirajte ju u root-u" + RESET);
+           return null;
         }
-        this.posiljkeUDatoteci.clear();
-        return filename;
+
     }
 
     /**
@@ -112,31 +124,36 @@ public class Datoteka {
      * @param filename
      */
     public void kreiranjePosiljkeUDatoteku(String filename) {
-        meni.pregledAkcijaKreiranjeDatoteke();
-        boolean quitKreiranjeDatoteke = false;
-        while (!quitKreiranjeDatoteke) {
-            int action = scanner.nextInt();
-            scanner.nextLine();
-            switch (action) {
-                case 1:
-                    unosNovePosiljke();
-                    meni.pregledAkcijaKreiranjeDatoteke();
-                    break;
-                case 2:
-                    writeDatoteku(filename);
-                    System.out.println(GREEN + "Datoteka " + filename + " je kreirana" + RESET);
-                    meni.pregledAkcijaKreiranjeDatoteke();
-                    break;
-                case 3:
-                    meni.pregledAkcija();
-                    quitKreiranjeDatoteke = true;
-                    break;
+        if (postojiFolder) {
+            meni.pregledAkcijaKreiranjeDatoteke();
+            boolean quitKreiranjeDatoteke = false;
+            while (!quitKreiranjeDatoteke) {
+                int action = scanner.nextInt();
+                scanner.nextLine();
+                switch (action) {
+                    case 1:
+                        unosNovePosiljke();
+                        meni.pregledAkcijaKreiranjeDatoteke();
+                        break;
+                    case 2:
+                        writeDatoteku(filename);
+                        System.out.println(GREEN + "Datoteka " + filename + " je kreirana" + RESET);
+                        meni.pregledAkcijaKreiranjeDatoteke();
+                        break;
+                    case 3:
+                        meni.pregledAkcija();
+                        quitKreiranjeDatoteke = true;
+                        break;
                     default:
                         System.out.println(ANSI_RED + "Unesli ste pogrešnu akciju" + RESET);
                         meni.pregledAkcijaKreiranjeDatoteke();
                         break;
+                }
             }
+        } else {
+            meni.pregledAkcija();
         }
+
     }
 
     /**
@@ -317,18 +334,25 @@ public class Datoteka {
      * Metoda za brisanje datoteke u folderu
      */
     public void brisanjeDatoteke() {
-        izlistDatoteka();
-        System.out.println("Unesite ime datoteke za brisanje: ");
-        String imeDatoteke = scanner.nextLine();
-        String imaDatoteke = findDatoteku(imeDatoteke);
-        if (imaDatoteke != null){
-            brisiDatoteku(imeDatoteke);
-            System.out.println(GREEN + "Datoteka je uspješno obrisana..." + RESET);
-            meni.pregledAkcija();
+        if (postojiFolder) {
+            izlistDatoteka();
+            System.out.println("Unesite ime datoteke za brisanje: ");
+            String imeDatoteke = scanner.nextLine();
+            String imaDatoteke = findDatoteku(imeDatoteke);
+            if (imaDatoteke != null){
+                brisiDatoteku(imeDatoteke);
+                System.out.println(GREEN + "Datoteka je uspješno obrisana..." + RESET);
+                meni.pregledAkcija();
+            } else {
+                System.out.println("----------------\n" + ANSI_RED + "Datoteka " + imeDatoteke + " ne postoji" + RESET);
+                meni.pregledAkcija();
+            }
         } else {
-            System.out.println("----------------\n" + ANSI_RED + "Datoteka " + imeDatoteke + " ne postoji" + RESET);
+            System.out.println(ANSI_RED + "Ne postoji mapa posiljke! Kreirajte ju u root-u" + RESET);
             meni.pregledAkcija();
+
         }
+
     }
 
     /**
@@ -393,4 +417,19 @@ public class Datoteka {
         this.posiljkeUDatoteci = posiljkeUDatoteci;
     }
 
+    public boolean isPostojiFolder() {
+        return postojiFolder;
+    }
+
+    public void setPostojiFolder(boolean postojiFolder) {
+        this.postojiFolder = postojiFolder;
+    }
+
+    public boolean isImaDatoteka() {
+        return imaDatoteka;
+    }
+
+    public void setImaDatoteka(boolean imaDatoteka) {
+        this.imaDatoteka = imaDatoteka;
+    }
 }

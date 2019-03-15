@@ -1,6 +1,4 @@
-package MarioJavaZadatak.model;
-
-import java.util.Scanner;
+package model;
 
 public class UIAkcije {
 
@@ -25,7 +23,7 @@ public class UIAkcije {
     public void pregledAkcijaKreiranjeDatoteke(){
         System.out.println("-------------------\nKreiranje datoteke\n-------------------");
         System.out.println("1 - Unos nove pošiljke\n" +
-                "2 - Upisi pošiljke u datoteku\n" +
+                "2 - Upiši pošiljke u datoteku\n" +
                 "3 - Natrag");
         System.out.println("Odaberi akciju: ");
 

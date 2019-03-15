@@ -1,7 +1,5 @@
-package MarioJavaZadatak;
-
-import MarioJavaZadatak.model.Datoteka;
-import MarioJavaZadatak.model.UIAkcije;
+import model.Datoteka;
+import model.UIAkcije;
 import java.util.*;
 
 public class Main {
@@ -27,6 +25,16 @@ public class Main {
                     break;
                 case 1:
                     datoteka.izlistDatoteka();
+                    if (!datoteka.isPostojiFolder()) {
+                        meni.pregledAkcija();
+                    } else {
+                        if (!datoteka.isImaDatoteka()) {
+                            meni.pregledAkcija();
+                            break;
+                        }
+                        datoteka.pogledajDatoteku();
+                        break;
+                    }
                     datoteka.pogledajDatoteku();
                     break;
                 case 2:

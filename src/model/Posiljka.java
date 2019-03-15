@@ -1,9 +1,9 @@
-package MarioJavaZadatak.model;
+package model;
 
-import MarioJavaZadatak.enums.KategorijaPosiljke;
-import MarioJavaZadatak.enums.NacinPlacanja;
-import MarioJavaZadatak.enums.VrstaPosiljke;
-import MarioJavaZadatak.enums.VrstaPrometa;
+import enums.KategorijaPosiljke;
+import enums.NacinPlacanja;
+import enums.VrstaPosiljke;
+import enums.VrstaPrometa;
 
 import java.util.Scanner;
 
